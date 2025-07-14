@@ -6,3 +6,5 @@ cert.crt
 cert.key
 
 db.sqlite3
+
+media/
