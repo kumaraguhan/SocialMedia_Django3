@@ -38,6 +38,7 @@ SOCIAL_AUTH_FACEBOOK_SECRET = '1da41f45ad202cd45cf250583a27e80e' # Facebook App 
 
 INSTALLED_APPS = [
     'account.apps.AccountConfig',
+    'images.apps.ImagesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
