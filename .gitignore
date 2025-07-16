@@ -8,3 +8,6 @@ cert.key
 db.sqlite3
 
 media/
+
+venv-bookmarks
+
