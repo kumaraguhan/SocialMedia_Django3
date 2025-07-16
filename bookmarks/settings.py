@@ -80,6 +80,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bookmarks.wsgi.application'
 
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
