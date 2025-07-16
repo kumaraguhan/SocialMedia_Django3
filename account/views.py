@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
+from actions.utils import create_action
 
 def user_login(request):
     if request.method == 'POST':
@@ -28,12 +29,21 @@ def user_login(request):
     return render(request, 'account/login.html', {'form': form})
 
 from django.contrib.auth.decorators import login_required
-
+from actions.models import Action
 @login_required
 def dashboard(request):
+    # Display all actions by default
+    actions = Action.objects.exclude(user=request.user)
+    following_ids = request.user.following.values_list('id',
+    flat=True)
+    if following_ids:
+        # If user is following others, retrieve only their actions
+        actions = actions.filter(user_id__in=following_ids)
+    actions = actions.select_related('user', 'user__profile').prefetch_related('target')[:10]
     return render(request,
                   'account/dashboard.html',
-                  {'section': 'dashboard'})
+                  {'section': 'dashboard',
+                   'actions': actions })
 
 
 def register(request):
@@ -49,6 +59,7 @@ def register(request):
             new_user.save()
             # Create the user profile
             Profile.objects.create(user=new_user)
+            create_action(new_user, 'has created an account')
             return render(request,
                         'account/register_done.html', 
                         {'new_user': new_user})
@@ -122,6 +133,7 @@ def user_follow(request):
                 Contact.objects.get_or_create(
                     user_from=request.user,
                     user_to=user)
+                create_action(request.user, 'is following', user)
             else:
                 Contact.objects.filter(user_from=request.user,
                                        user_to=user).delete()
